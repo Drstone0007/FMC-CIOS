@@ -1,0 +1,9 @@
+{
+  "name": "FMC Abeokuta Health Neural CIOS",
+  "description": "An agentic health diagnostic system curated for Federal Medical Center (FMC) Idi-Aba, Abeokuta. Powered by a Gemini-driven expert swarm for parallel clinical reasoning.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": []
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+    <script>
+      // Defensive patch to prevent libraries from crashing when trying to re-assign window.fetch
+      // or complaining about missing global/process objects.
+      (function() {
+        try {
+          var descriptor = Object.getOwnPropertyDescriptor(window, 'fetch');
+          if (descriptor && !descriptor.writable && !descriptor.set && descriptor.configurable) {
+            var originalFetch = window.fetch.bind(window);
+            Object.defineProperty(window, 'fetch', {
+              configurable: true,
+              enumerable: true,
+              get: function() { return originalFetch; },
+              set: function(v) { 
+                console.warn('Prevented attempt to override window.fetch');
+              }
+            });
+          }
+        } catch (e) {
+          // Ignore errors in defineProperty
+        }
+
+        // Many universal libraries expect 'global' to exist.
+        // We use Object.create(window) so that assignments to global.fetch 
+        // don't fail if window.fetch is a read-only property.
+        if (typeof window.global === 'undefined') {
+          window.global = Object.create(window);
+          // Optional: add a writable fetch to the global proxy if possible
+          try {
+            window.global.fetch = window.fetch;
+          } catch (e) {}
+        }
+        
+        // Some libraries also expect 'process'
+        if (typeof window.process === 'undefined') {
+          window.process = {
+            env: {},
+            nextTick: function(cb) { setTimeout(cb, 0); },
+            browser: true
+          };
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
